@@ -1,5 +1,4 @@
-#ifndef ProductManager_H
-#define ProductManager_H
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
@@ -12,32 +11,12 @@ enum class SortBy { Price, Quantity, Name };
 template<typename T>
 class ProductManager {
 private:
-vector<T> products;
 
-void sortProductsByAttribute(vector<T>& sortedProducts, SortBy sortBy) const {
-    for (size_t i = 0; i < sortedProducts.size() - 1; ++i) {
-        for (size_t j = 0; j < sortedProducts.size() - i - 1; ++j) {
-            switch (sortBy) {
-            case SortBy::Price:
-            if (sortedProducts[j].getPrice() > sortedProducts[j + 1].getPrice()) {
-                swap(sortedProducts[j], sortedProducts[j + 1]);
-            }
-                    break;
-                case SortBy::Quantity:
-                    if (sortedProducts[j].getQuantity() > sortedProducts[j + 1].getQuantity()) {
-                        swap(sortedProducts[j], sortedProducts[j + 1]);
-                    }
-                    break;
-                case SortBy::Name:
-                    if (sortedProducts[j].getName() > sortedProducts[j + 1].getName()) {
-                        swap(sortedProducts[j], sortedProducts[j + 1]);
-                    }
-                    break;
-                }
-            }
-        }
-    }
+    
+
 public:
+    vector<T> products;
+
     ProductManager() {}
     vector<T> getProducts() {
         return products;
@@ -61,25 +40,81 @@ public:
             cout << product << endl;
         }
     }
-
-    vector<T> sortProducts(const string& sortBy) const {
-        vector<T> sortedProducts = products;
-        if (sortBy == "Price") {
-            sortProductsByAttribute(sortedProducts, SortBy::Price);
-        }
-        else if (sortBy == "Quantity") {
-            sortProductsByAttribute(sortedProducts, SortBy::Quantity);
-        }
-        else if (sortBy == "Name") {
-            sortProductsByAttribute(sortedProducts, SortBy::Name);
-        }
-        else {
-            cout<< "Invalid sort option";
-            return products;
-        }
-        return sortedProducts;
+    void operator- (Product x)
+    {
+        removeProduct(x);
     }
+    void operator+ (Product x)
+    {
+        addProduct(x);
+    }
+    void sortProducts(SortBy sortBy) {
+        for (int i = 0; i < products.size() - 1; ++i) {
+            for (int j = 0; j < products.size() - i - 1; ++j) {
+                
+                if (sortBy == SortBy::Price) {
+                    if (products[j].getPrice() > products[j + 1].getPrice()) {
+                        swap(products[j], products[j + 1]);
+                    }
+                }
+                else if (sortBy == SortBy::Quantity) {                
+                    if (products[j].getQuantity() > products[j + 1].getQuantity()) {
+                        swap(products[j], products[j + 1]);
+                    }
+                }
+                else if (sortBy == SortBy::Name) {
+                    if (products[j].getName() > products[j + 1].getName()) {
+                        swap(products[j], products[j + 1]);
+                    }
+                }
+                }
+            }
+        }
     
+
+    template<typename U = T>
+    typename enable_if<is_same<U, ElectronicsProduct>::value, double>::type
+        getMaxWarrantyYears() const {
+        double maxWarranty = 0.0;
+        for (const auto& product : products) {
+            const ElectronicsProduct& elecProduct = static_cast<const ElectronicsProduct&>(product);
+            double warranty = elecProduct.getWarrantyYears();
+            if (warranty > maxWarranty) {
+                maxWarranty = warranty;
+            }
+        }
+        return maxWarranty;
+    }
+
+    template<typename U = T>
+    typename enable_if<is_same<U, ElectronicsProduct>::value, double>::type
+        getMinWarrantyYears() const {
+        double minWarranty = numeric_limits<double>::max();
+        for (const auto& product : products) {
+            const ElectronicsProduct& elecProduct = static_cast<const ElectronicsProduct&>(product);
+            double warranty = elecProduct.getWarrantyYears();
+            if (warranty < minWarranty) {
+                minWarranty = warranty;
+            }
+        }
+        return minWarranty;
+    }
+
+    template<typename U = T>
+    typename enable_if<is_same<U, ElectronicsProduct>::value, double>::type
+        getAvgWarrantyYears() const {
+        double totalWarranty = 0.0;
+        int electronicsCount = 0;
+        for (const auto& product : products) {
+            const ElectronicsProduct& elecProduct = static_cast<const ElectronicsProduct&>(product);
+            totalWarranty += elecProduct.getWarrantyYears();
+            electronicsCount++;
+        }
+        if (electronicsCount == 0) {
+            return 0.0; 
+        }
+        return totalWarranty / electronicsCount;
+    }
     
 
 };
@@ -87,27 +122,16 @@ public:
 template<typename T>
 ostream& operator<<(ostream& os, const ProductManager<T>& productManager) {
     for (int i = 0; i < productManager.products.size(); ++i) {
-        os << productManager.products[i] << endl;
+        os << productManager.products[i].getName() << endl;
     }
     return os;
 }
 
 
-template<typename T>
-ProductManager<T> operator+(const ProductManager<T>& lhs, const T& rhs) {
-    ProductManager<T> result = lhs;
-    result.addProduct(rhs);
-    return result;
-}
-
-template<typename T>
-ProductManager<T> operator-(const ProductManager<T>& lhs, const T& rhs) {
-    ProductManager<T> result = lhs;
-    result.removeProduct(rhs);
-    return result;
-}
 
 
 
 
-#endif 
+
+
+

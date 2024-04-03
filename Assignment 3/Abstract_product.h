@@ -1,5 +1,4 @@
-#ifndef Abstract_product_H
-#define Abstract_product_H
+#pragma once
 #include <iostream>
 #include <string>
 using namespace std;
@@ -11,14 +10,18 @@ protected:
 	float price;
 	string category;
 	string brand;
+	int quantity;
 public:
-	Product(string n = "", string i = "", float p = -1, string c = "", string b = "")
-		:name(n), ID(i), price(p), category(c),brand(b){}
+	Product(string n = "", string i = "", float p = -1, string c = "", string b = "", int quantity = 0)
+		:name(n), ID(i), price(p), category(c),brand(b), quantity(quantity){}
 	string getName() const{
 		return name;
 	}
 	string getID()const {
 		return ID;
+	}
+	int getQuantity() const {
+		return quantity;
 	}
 	float getPrice() const {
 		return price;
@@ -44,8 +47,14 @@ public:
 	void setBrand(string s) {
 		brand = s;
 	}
-
+	bool operator==(const Product& other) const {
+		return this->getName() == other.getName();
+	}
+	friend ostream& operator<<(ostream& os, const Product& p)
+	{
+		os << " Name: " << p.name << " ,Price per unit: " << p.price << " ,Quantity: " << p.quantity;
+		return os;
+	}
 };
 
-#endif 
 

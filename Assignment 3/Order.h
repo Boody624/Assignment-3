@@ -1,5 +1,4 @@
-#ifndef Order_H
-#define	Order_H
+#pragma once
 #include "ProductManger.h"
 #include "ShoppingCart.h"
 #include "FoodProducts.h"
@@ -14,25 +13,48 @@ using namespace std;
 
 class Order {
 private:
-    static int nextID; 
     int orderID;
+    
+
+public:
+    static int nextID;
     ShoppingCart<ElectronicsProduct> electronicsCart;
     ShoppingCart<FoodProduct> foodCart;
     ShoppingCart<BookProduct> bookCart;
     vector<Discount> discounts;
-
-public:
     Order() : orderID(nextID++) {}
-
+    Order(const ShoppingCart<ElectronicsProduct>& electronicsCart, 
+        const ShoppingCart<FoodProduct>& foodCart, 
+        const ShoppingCart<BookProduct>& bookCart):electronicsCart(electronicsCart), 
+        foodCart(foodCart), bookCart(bookCart), orderID(nextID++) {}
+    void display() const {
+        cout << "Order ID: " << orderID << endl;
+        cout << "Shopping Cart:";
+        electronicsCart.displayCart();
+		foodCart.displayCart();
+		bookCart.displayCart();
+    }
     void addDiscount(const Discount& discount) {
         discounts.push_back(discount);
     }
     template <typename T>
-    double computeDiscountedPrice(const vector<Discount>& discounts) const {
+    void applyDiscounts() {
+        ShoppingCart<T> cart;
+        vector <T> produc = cart.getProducts();
+        cout<<"Enter your desired number of the product"<<endl;
+		int n;
+        cin >> n;
+
+        discounts[n].applyDiscount<T>(produc[n], cart);
+    }
+    
+
+    template <typename T>
+    double computeTotalPrice(const vector<Discount>& discounts) const {
         double totalPrice = 0.0;
         vector<T> products = ShoppingCart.getProducts();
         for (int i = 0; i < products.size(); ++i) {
-            double productPrice = products[i].getPrice() * quantities[i];
+            double productPrice = products[i].getPrice() * products.size();
 
             for (const auto& discount : discounts) {
                 if (discount.isApplicable(products[i])) {
@@ -46,25 +68,8 @@ public:
         return totalPrice;
     }
 
-    double computeTotalPrice() const {
-        double totalPrice = 0.0;
 
-        // Apply discounts on electronics products
-        // Iterate through the electronics cart and apply discounts
-        // Update totalPrice accordingly
 
-        // Apply discounts on food products
-        // Iterate through the food cart and apply discounts
-        // Update totalPrice accordingly
-
-        // Apply discounts on book products
-        // Iterate through the book cart and apply discounts
-        // Update totalPrice accordingly
-
-        return totalPrice;
-    }
 };
 
-int Order::nextID = 1;
 
-#endif

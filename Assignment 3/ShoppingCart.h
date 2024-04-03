@@ -1,5 +1,4 @@
-#ifndef SHOPPINGCART_H
-#define SHOPPINGCART_H
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -30,11 +29,14 @@ public:
     vector<T> getProducts() const {
         return products;
     }
-
-    void addProduct(const T& product, ProductManager<T>& productManager) {
+    
+    void addProduct(const T& product, ProductManager<Product>& productManager) {
+        vector <Product> prods = productManager.getProducts();
         bool productExists = false;
+        string name2 = product.getName();
         for (const auto& p : productManager.getProducts()) {
-            if (p == product) {
+            string name1 = p.getName();
+            if (name2 == name1) {
                 productExists = true;
                 break;
             }
@@ -47,14 +49,15 @@ public:
         int index = findProductIndex(product);
         if (index != -1) {
             quantities[index]++;
-            productManager.removeProduct(product);
         }
         else {
             products.push_back(product);
             quantities.push_back(1);
-            productManager.removeProduct(product);
         }
+
+        productManager.removeProduct(product);
     }
+    
 
     void removeProduct(const T& product, ProductManager<T>& productManager) {
         int index = findProductIndex(product);
@@ -81,6 +84,6 @@ public:
             cout << products[i] << " - Quantity: " << quantities[i] << endl;
         }
     }
+    
 };
 
-#endif

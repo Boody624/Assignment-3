@@ -9,72 +9,65 @@
 #include <vector>
 #include <string>
 using namespace std;
-
+int Order::nextID = 0;
 void displayAppliedDiscounts(const vector<Discount>& discounts);
 int main() {
 
-    
-    // Create ProductManager instance
-    ProductManager<ElectronicsProduct> electronicsManager;
-    ProductManager<FoodProduct> foodManager;
-    ProductManager<BookProduct> bookManager;
-    ElectronicsType type = ElectronicsType::Phone;
-    // Create and add different products to ProductManager instances
-    ElectronicsProduct phone(ElectronicsType::Phone, 500, 10, 1, "Apple");
-    electronicsManager.addProduct(phone);
-    ElectronicsProduct laptop(ElectronicsType::Laptop, 1200, 5, 2, "HP");
-    electronicsManager.addProduct(laptop);
+    ProductManager<Product>* productManager = new ProductManager<Product>();
 
-    FoodProduct vegetable("Vegetable", 2, 100, "2024-04-01", "Carrot", "Vegetable");
-    foodManager.addProduct(vegetable);
-    FoodProduct fruit("Fruit", 3, 50, "2024-04-03", "Apple", "Fruit");
-    foodManager.addProduct(fruit);
+    // Add various products to the ProductManager
+    ElectronicsProduct laptop(ElectronicsType::Laptop, 1200, 5, 2, "HP", "Pavilion 15");
+    productManager->addProduct(laptop);
+    ElectronicsProduct phone(ElectronicsType::Phone, 500, 10, 1, "Apple", "iPhone 15");
+    productManager->addProduct(phone);
 
-    BookProduct novel("Novel", 20, 30, "Jane Austen", "Romance", "Pride and Prejudice");
-    bookManager.addProduct(novel);
-    BookProduct textbook("Textbook", 50, 20, "John Smith", "Education", "Mathematics");
-    bookManager.addProduct(textbook);
+    FoodProduct vegetable(FoodType::Vegetable, 2, "2024-04-01", 100, "Carrot");
+    productManager->addProduct(vegetable);
+    FoodProduct fruit(FoodType::Fruit, 3, "2024-04-03", 50, "Apple");
+    productManager->addProduct(fruit);
 
-    // Display sorted products
-    cout << "Sorted by price:" << endl;
-    cout << electronicsManager.sortProducts("Price") << endl;
+    BookProduct novel("Pride and Prejudice", 30, "Jane Austen", "Romance", 20);
+    productManager->addProduct(novel);
+    BookProduct textbook("Mathematics", 50, "John Smith", "Education", 20);
+    productManager->addProduct(textbook);
 
-    cout << "Sorted by quantity:" << endl;
-    cout << foodManager.sortProducts("Quantity") << endl;
+    productManager->sortProducts(SortBy::Price);
+    productManager->sortProducts(SortBy::Quantity);
+    productManager->sortProducts(SortBy::Name);
 
-    cout << "Sorted lexicographically by name:" << endl;
-    cout << bookManager.sortProducts("Name") << endl;
+    // Remove a product and then add it back
+    *productManager - textbook;
+    *productManager + textbook;
 
-    // Test overloaded operators
-    ProductManager<ElectronicsProduct> combinedElectronics = electronicsManager + laptop;
-    cout << "Combined electronics products:" << endl;
-    cout << combinedElectronics << endl;
-
-    ProductManager<BookProduct> updatedBooks = bookManager - textbook;
-    cout << "Updated book products:" << endl;
-    cout << updatedBooks << endl;
+    // Create shopping carts and add products
+    ShoppingCart<BookProduct> cart1;
+    cart1.addProduct(novel, *productManager);
+    ShoppingCart<BookProduct> cart2;
+    cart2.addProduct(textbook, *productManager);
+    ShoppingCart<FoodProduct> cart3;
+	cart3.addProduct(fruit, *productManager);
+    ShoppingCart<FoodProduct> cart4;
+	cart4.addProduct(vegetable, *productManager);
+    ShoppingCart<ElectronicsProduct> cart5;
+	cart5.addProduct(phone, *productManager);
+    ShoppingCart<ElectronicsProduct> cart6;
+	cart6.addProduct(laptop, *productManager);
+    Order order1(cart5, cart3, cart2);
+    Order order2(cart6, cart4, cart1);
 
     // Calculate and display warranty statistics
-    /*cout << "max warranty: " << electronicsmanager.getmaxwarranty() << " years" << endl;
-    cout << "min warranty: " << electronicsmanager.getminwarranty() << " years" << endl;
-    cout << "average warranty: " << electronicsmanager.getaveragewarranty() << " years" << endl;*/
+    cout << "Max warranty: " << productManager->getMaxWarrantyYears<ElectronicsProduct>() << " years" << endl;
+    cout << "Min warranty: " << productManager->getMinWarrantyYears<ElectronicsProduct>() << " years" << endl;
+    cout << "Average warranty: " << productManager->getAvgWarrantyYears<ElectronicsProduct>() << " years" << endl;
 
     // Create orders
-    Order order1;
-    order1.addProduct(phone);
-    order1.addProduct(vegetable);
-
-    Order order2;
-    order2.addProduct(laptop);
-    order2.addProduct(fruit);
-
-    // Display order details before applying discounts
+    Discount discount1(Type::BOGO, 0);
+    order1.display();
     cout << "Order 1 details before applying discounts:" << endl;
-    // Display order details for order1
-
+    order1.addDiscount(discount1);
+    order1.applyDiscounts<Discount>();
     cout << "Order 2 details before applying discounts:" << endl;
-    // Display order details for order2
-
+    order2.display();
     // Apply BOGO discount
     // Apply NileCart coupon and percentage discount
 
@@ -86,17 +79,6 @@ int main() {
     // Display order details for order2
 
     return 0;
-    
-
-
-
-
-
-
-
-
-
-	return 0;
 }
 
 void displayAppliedDiscounts(const vector<Discount>& discounts) {

@@ -1,5 +1,4 @@
-#ifndef FoodProducts_H
-#define FoodProdcuts_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -12,13 +11,14 @@ private:
     double pricePerKilo;
     string expiryDate;
     double quantity;
+    string name;
     FoodType type;
 public:
    
-    FoodProduct(double pricePerKilo = -1, string expiryDate = " ",
-        double quantity = -1, FoodType type = FoodType::Other)
+    FoodProduct(FoodType type = FoodType::Other, double pricePerKilo = -1, string expiryDate = " ",
+        double quantity = -1, string n = "")
         : pricePerKilo(pricePerKilo), expiryDate(expiryDate),
-        quantity(quantity), type(type) {}
+        quantity(quantity), type(type), name(n) {}
 
     string getName() const {
         return name; 
@@ -35,7 +35,8 @@ public:
     FoodType getType() const { 
         return type; 
     }
-
+    bool operator==(const Product& other) const {
+        return this->getName() == other.getName();
+    }
 
 };
-#endif

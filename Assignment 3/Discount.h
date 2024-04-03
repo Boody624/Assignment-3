@@ -1,11 +1,11 @@
-#ifndef Discount_H
-#define Discount_H
+#pragma once
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include "Abstract_product.h"
 #include "ShoppingCart.h"
+#include "productManger.h"
 using namespace std;
 enum class Type { Percentage, FixedAmount, BOGO, Coupon };
 
@@ -24,39 +24,45 @@ public:
     double getValue() const {
         return value;
     }
-    double applyDiscount(Product* product) const {
-        double price = product->getPrice();
+    template<typename T>
+    double applyDiscount(ProductManager<T> productManager, ShoppingCart<T> cart) const {
+        cout<<"What is the index of your desired to discount product"<<endl;
+		int index;
+        cin >> index;
+        double price = productManager.products[index]->getPrice();
         switch (type) {
         case Type::Percentage:
-            product->setPrice(price * (1.0 - value / 100.0));
+            productManager.products[index]->setPrice(price * (1.0 - value / 100.0));
             return (price * (1.0 - value / 100.0));
             break;
         case Type::FixedAmount:
-            product->setPrice(price -value);
-            return price- value;
+            productManager.products[index]->setPrice(price -value);
+            return (price- value);
             break;
 
         case Type::BOGO:
-
+            cart.addProduct(productManager, productManager.products[index]);
             return price;
             break;
 
         case Type::Coupon:
-            product->setPrice(price * 0.75);
+            productManager.products[index]->setPrice(price * 0.75);
             return (price * 0.75);
             break;
 
         }
+        return price;
     }
     template<typename T>
     double operator-(Product* product) const {
-        return applyDiscount(product);
+        return this->applyDiscount(product);
     }
+
     template<typename T>
-    double combineDiscounts(Product* product, const vector<Discount>& discounts) {
+    double combineDiscounts(Product* product, vector<Discount>& discounts) {
         double discountedPrice = product->getPrice();
-        for (const Discount& discount : discounts) {
-            discountedPrice = discount - product;
+        for (int i = 0; i < discounts.size(); ++i) {
+            discountedPrice = product - this;
         }
         return discountedPrice;
     }
@@ -67,11 +73,3 @@ public:
 
 
 
-
-
-
-
-
-
-
-#endif 

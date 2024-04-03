@@ -1,5 +1,4 @@
-#ifndef BooksProducts_H
-#define BooksProducts_H
+#pragma once
 #include <iostream>
 #include <string>
 #include "Abstract_product.h"
@@ -19,7 +18,7 @@ public:
         : title(title), price(price), author(author),
         genre(genre), quantityAvailable(quantityAvailable) {}
 
-    string getTitle() const { 
+    string getName() const { 
         return title; 
     }
     double getPrice() const { 
@@ -31,7 +30,7 @@ public:
     string getGenre() const { 
         return genre; 
     }
-    int getQuantityAvailable() const { 
+    int getQuantity() const { 
         return quantityAvailable; 
     }
     void setPrice(int x) {
@@ -40,9 +39,10 @@ public:
     void setQuantityAvailable(int x) {
         quantityAvailable = x;
     }
+    bool operator==(const Product& other) const {
+        return this->getName() == other.getName();
+    }
 
 };
 
 
-
-#endif

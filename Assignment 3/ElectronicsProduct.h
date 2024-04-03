@@ -1,5 +1,4 @@
-#ifndef ElectronicsProduct_H
-#define ElectronicsProduct_H
+#pragma once
 #include <iostream>
 #include <string>
 #include "Abstract_product.h"
@@ -8,25 +7,26 @@ enum class ElectronicsType { Phone, Laptop, Watch, Other };
 class ElectronicsProduct: public Product{
 private:
     double pricePerDevice;
+    string name;
     int numDevicesAvailable;
-    int warrantyMonths;
+    int warrantyYears;
     string factory;
     ElectronicsType type;
 public:
     
     ElectronicsProduct(ElectronicsType type = ElectronicsType::Other, double pricePerDevice = -1, int numDevicesAvailable = -1,
-        int warrantyMonths = -1, string factory = " " )
+        int warrantyYears = -1, string factory = " " , string name = " " )
         : type(type), pricePerDevice(pricePerDevice), numDevicesAvailable(numDevicesAvailable),
-        warrantyMonths(warrantyMonths), factory(factory) {}
+        warrantyYears(warrantyYears), factory(factory), name(name) {}
 
     double getPricePerDevice() const { 
         return pricePerDevice; 
     }
-    int getNumDevicesAvailable() const { 
+    int getQuantity() const {
         return numDevicesAvailable; 
     }
-    int getWarrantyMonths() const { 
-        return warrantyMonths; 
+    int getWarrantyYears() const { 
+        return warrantyYears; 
     }
     string getFactory() const { 
         return factory; 
@@ -34,26 +34,12 @@ public:
     ElectronicsType getType() const {
         return type; 
     }
-
+    string getName() const {
+        return name;
+    }
+    bool operator==(const Product& other) const {
+        return this->getName() == other.getName();
+    }
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif 
