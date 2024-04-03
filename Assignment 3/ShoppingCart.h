@@ -34,9 +34,8 @@ public:
         vector <Product> prods = productManager.getProducts();
         bool productExists = false;
         string name2 = product.getName();
-        for (const auto& p : productManager.getProducts()) {
-            string name1 = p.getName();
-            if (name2 == name1) {
+        for (int i = 0; i < prods.size(); i++) {
+            if (name2 == prods[i].getName()) {
                 productExists = true;
                 break;
             }

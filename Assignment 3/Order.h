@@ -5,6 +5,7 @@
 #include "ElectronicsProduct.h"
 #include "BooksProducts.h"
 #include "Discount.h"
+#include "ProductManger.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -38,14 +39,14 @@ public:
         discounts.push_back(discount);
     }
     template <typename T>
-    void applyDiscounts() {
+    void applyDiscounts(ProductManager<T> productManager) {
         ShoppingCart<T> cart;
         vector <T> produc = cart.getProducts();
         cout<<"Enter your desired number of the product"<<endl;
 		int n;
         cin >> n;
 
-        discounts[n].applyDiscount<T>(produc[n], cart);
+        discounts[n].applyDiscount(productManager, cart);
     }
     
 
